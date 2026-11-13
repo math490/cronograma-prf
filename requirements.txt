@@ -1,0 +1,3 @@
+# Dependências somente do servidor LOCAL de desenvolvimento.
+# O GitHub Pages não instala Python; o SQLite do site roda em WebAssembly.
+Flask>=3.1,<4

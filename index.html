@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="night">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a1220" />
+  <meta name="description" content="PRF Study: seu cronograma de 365 dias, 2h por dia, para o concurso PRF, com progresso salvo em SQLite no navegador." />
+  <meta name="color-scheme" content="dark" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="./assets/icon.svg" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@5/daisyui.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="./assets/style.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/vue@3.5.18/dist/vue.global.prod.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.js"></script>
+  <script defer src="./assets/db.js"></script>
+  <script defer src="./assets/app.js"></script>
+  <title>PRF Study • Missão Aprovação</title>
+</head>
+<body>
+<div id="app" v-cloak>
+  <template v-if="loading">
+    <div class="boot-screen">
+      <div class="brand-mark boot-mark">P<span>•</span></div>
+      <div class="text-xl font-semibold text-slate-100 mt-5">Preparando sua missão</div>
+      <div class="text-sm text-slate-400 mt-2">Abrindo o cronograma e o banco SQLite…</div>
+      <div class="loading loading-ring loading-md text-info mt-4"></div>
+    </div>
+  </template>
+  <template v-else-if="bootError">
+    <div class="boot-screen px-6 text-center"><div class="brand-mark">!</div>
+      <h1 class="text-xl font-semibold mt-4">Não foi possível abrir o aplicativo</h1>
+      <p class="max-w-lg text-slate-400 mt-3">{{ bootError }}</p>
+      <p class="max-w-lg text-slate-400 mt-2">Abra por um endereço HTTP/HTTPS. Na primeira execução, é necessária conexão com a internet para carregar as bibliotecas.</p>
+      <button class="btn btn-primary mt-5" @click="windowReload">Tentar novamente</button>
+    </div>
+  </template>
+  <template v-else>
+    <div class="app-layout">
+      <!-- Barra lateral desktop -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-mark">P<span>•</span></div>
+          <div><strong class="brand-name">PRF<span> STUDY</span></strong><div class="brand-sub">MISSÃO APROVAÇÃO</div></div>
+        </div>
+        <div class="aside-overline">SEU PAINEL</div>
+        <nav class="side-nav" aria-label="Navegação principal">
+          <button v-for="item in navigation" :key="item.id" class="side-item" :class="{active:page===item.id}" @click="navigate(item.id)">
+            <app-icon :name="item.icon" :size="19"></app-icon><span>{{ item.label }}</span>
+            <span v-if="item.id==='errors' && unresolvedCount" class="side-count">{{unresolvedCount}}</span>
+          </button>
+        </nav>
+        <div class="aside-overline mt-9">O PLANO</div>
+        <div class="sidebar-note">
+          <div class="flex items-center gap-2"><app-icon name="calendar" :size="16"></app-icon><span>13 NOV 2026 — 12 NOV 2027</span></div>
+          <div class="flex items-center gap-2 mt-3"><app-icon name="clock" :size="16"></app-icon><span>2 horas todos os dias</span></div>
+          <div class="flex items-center gap-2 mt-3"><app-icon name="database" :size="16"></app-icon><span>SQLite no navegador</span></div>
+        </div>
+        <div class="side-bottom">
+          <div class="bottom-caption">DISCIPLINA CRIA RESULTADOS</div>
+          <div class="mb-2 flex items-center justify-between"><span class="text-xs text-slate-400">Progresso geral</span><span class="text-xs font-semibold text-sky-300">{{overallPct}}%</span></div>
+          <div class="progress-track"><div class="progress-fill" :style="{width:overallPct+'%'}"></div></div>
+          <p class="text-xs text-slate-500 mt-3">{{completedDays}} de 365 dias concluídos</p>
+        </div>
+      </aside>
+
+      <div class="mobile-topbar">
+        <div class="flex items-center gap-3"><div class="brand-mark mobile-mark">P<span>•</span></div><div><div class="font-extrabold tracking-tight text-white">PRF STUDY</div><div class="text-[10px] tracking-widest text-slate-500">MISSÃO APROVAÇÃO</div></div></div>
+        <button class="topbar-avatar" aria-label="Abrir ajustes" @click="navigate('settings')"><app-icon name="settings" :size="19"></app-icon></button>
+      </div>
+
+      <main class="main-content">
+        <div class="app-header">
+          <div>
+            <div class="eyebrow"><span class="glow-dot"></span> PLANEJAMENTO ESTRATÉGICO • PRF 2021</div>
+            <h1 class="page-title">{{ pageTitle }}</h1>
+            <p class="page-subtitle">{{ pageSubtitle }}</p>
+          </div>
+          <div class="header-right"><span class="date-pill"><app-icon name="calendar" :size="15"></app-icon> {{todayLabel}}</span></div>
+        </div>
+
+        <!-- Página principal -->
+        <section v-if="page==='today'" class="page-animate" aria-label="Estudo do dia">
+          <div class="summary-grid">
+            <div class="summary-card"><div class="summary-icon blue"><app-icon name="target" :size="20"></app-icon></div><div><div class="summary-label">PROGRESSO TOTAL</div><div class="summary-number">{{overallPct}}<small>%</small></div><div class="summary-helper">{{completedDays}} / 365 dias</div></div></div>
+            <div class="summary-card"><div class="summary-icon orange"><app-icon name="flame" :size="20"></app-icon></div><div><div class="summary-label">SEQUÊNCIA ATUAL</div><div class="summary-number">{{streak}} <small>dias</small></div><div class="summary-helper">Seu ritmo de consistência</div></div></div>
+            <div class="summary-card"><div class="summary-icon teal"><app-icon name="clock" :size="20"></app-icon></div><div><div class="summary-label">HORAS CUMPRIDAS</div><div class="summary-number">{{completedHours}} <small>h</small></div><div class="summary-helper">Meta total: 730 horas</div></div></div>
+            <div class="summary-card"><div class="summary-icon purple"><app-icon name="award" :size="20"></app-icon></div><div><div class="summary-label">BLOCOS CONCLUÍDOS</div><div class="summary-number">{{completedTaskCount}} <small>/ 1.460</small></div><div class="summary-helper">4 blocos × 365 dias</div></div></div>
+          </div>
+
+          <div class="notice-inline mt-5"><app-icon name="info" :size="17"></app-icon><span><strong>Sobre este plano:</strong> o edital PRF 2021 é nacional e não previa especialidade de informática. A programação cobre todos os blocos e reforça informática. Confira alterações legais e editais futuros.</span></div>
+
+          <div class="content-grid mt-6">
+            <div class="space-y-5 min-w-0">
+              <article class="day-panel">
+                <div class="day-topline"><span class="day-chip"><app-icon name="bolt" :size="14"></app-icon> DIA {{selectedDay.id}} DE 365</span><span class="phase-chip">{{selectedDay.phase}}</span></div>
+                <div class="day-heading-row">
+                  <div class="min-w-0"><p class="day-date-title">{{formatLongDate(selectedDay.date)}}</p><h2 class="day-main-title">{{selectedDay.theme}}</h2><p class="text-sm text-slate-400 mt-2">{{selectedDay.phase_hint}}</p></div>
+                  <div class="ring-progress" :style="{'--progress':selectedDayProgress+'%'}"><span>{{selectedDayProgress}}%</span></div>
+                </div>
+                <div class="day-metrics"><span><app-icon name="clock" :size="15"></app-icon> 120 minutos</span><span><app-icon name="layers" :size="15"></app-icon> 4 blocos de 30 min</span><span><app-icon name="check" :size="15"></app-icon> {{selectedDayDoneCount}}/4 feitos</span></div>
+                <div class="day-control-row">
+                  <button class="nav-button" @click="shiftDay(-1)" :disabled="selectedDay.id===1" aria-label="Dia anterior"><app-icon name="chevron-left" :size="19"></app-icon></button>
+                  <button class="today-button" @click="jumpToday">Ir para hoje</button>
+                  <button class="nav-button" @click="shiftDay(1)" :disabled="selectedDay.id===365" aria-label="Próximo dia"><app-icon name="chevron-right" :size="19"></app-icon></button>
+                  <button class="complete-day-button" :class="{done:isDayComplete(selectedDay.date)}" @click="toggleDay(selectedDay.date)"><app-icon :name="isDayComplete(selectedDay.date)?'check-circle':'check'" :size="17"></app-icon>{{isDayComplete(selectedDay.date)?'Dia concluído • Desfazer':'Marcar dia como feito'}}</button>
+                </div>
+              </article>
+
+              <article class="quote-card" aria-live="polite"><div class="quote-symbol">“</div><div class="quote-body"><div class="quote-overline">INSPIRAÇÃO DO DIA <span v-if="quoteFromAPI" class="api-dot">• via API</span></div><p class="quote-content">{{quote.content}}</p><p class="quote-author">— {{quote.author}}</p></div><button class="quote-refresh" @click="loadQuote(true)" :disabled="quoteLoading" title="Atualizar a frase"><app-icon name="refresh" :size="17"></app-icon></button></article>
+
+              <div class="section-title-row"><div><div class="section-kicker">ROTEIRO DE ESTUDO</div><h3 class="section-heading">Suas 2 horas de hoje</h3></div><span class="mini-pill">4 × 30 min</span></div>
+              <div class="task-list">
+                <article v-for="(task,i) in selectedDay.tasks" :key="selectedDay.date+'-'+i" class="task-card" :class="{completed:isTaskComplete(selectedDay.date,i)}">
+                  <button class="task-check" :class="{checked:isTaskComplete(selectedDay.date,i)}" @click="toggleTask(selectedDay.date,i)" :aria-label="'Marcar '+task.label+' como '+(isTaskComplete(selectedDay.date,i)?'pendente':'concluída')" :aria-pressed="isTaskComplete(selectedDay.date,i)"><app-icon v-if="isTaskComplete(selectedDay.date,i)" name="check" :size="18"></app-icon></button>
+                  <div class="task-body"><div class="task-meta"><span class="task-order">BLOCO {{String(i+1).padStart(2,'0')}}</span><span class="task-category">{{task.method}}</span></div>
+                    <h4 class="task-title">{{task.label}}</h4>
+                    <div class="subject-line"><span class="subject-dot" :style="{background:subjectColor(task.subject)}"></span>{{task.subject}}</div>
+                    <p class="task-topic">{{localizedTopic(task.content)}}</p>
+                    <p class="task-guidance">{{task.instruction}}</p>
+                    <div class="task-foot"><span class="minutes-label"><app-icon name="clock" :size="14"></app-icon> 30 minutos</span><span v-if="isTaskComplete(selectedDay.date,i)" class="text-emerald-300 text-xs font-medium">Concluído</span><button v-else class="task-start" @click="startTimerFor(i)"><app-icon name="play" :size="13"></app-icon> Iniciar foco</button></div>
+                  </div>
+                </article>
+              </div>
+
+              <article class="panel journal-panel"><div class="flex items-center justify-between gap-3 flex-wrap"><div><div class="section-kicker">REGISTRO PESSOAL</div><h3 class="section-heading">Diário de bordo</h3></div><span class="mini-pill"><app-icon name="database" :size="13"></app-icon> SQLite</span></div>
+                <label class="field-label mt-5" for="day-notes">O que aprendi? Onde tive dificuldade?</label>
+                <textarea id="day-notes" class="textarea textarea-bordered journal-textarea w-full" v-model="journal.notes" @blur="saveJournal" placeholder="Anote suas descobertas, dúvidas e pontos para revisar…" rows="4" maxlength="12000"></textarea>
+                <div class="journal-controls">
+                  <div><label class="field-label" for="total-questions">Itens resolvidos</label><input id="total-questions" class="input input-bordered field-input" type="number" min="0" v-model.number="journal.questions_total" @change="saveJournal"></div>
+                  <div><label class="field-label" for="correct-questions">Acertos</label><input id="correct-questions" class="input input-bordered field-input" type="number" min="0" v-model.number="journal.questions_correct" @change="saveJournal"></div>
+                  <div class="confidence-block"><label class="field-label" for="confidence">Confiança</label><select id="confidence" class="select select-bordered field-input" v-model.number="journal.confidence" @change="saveJournal"><option :value="1">1 · Muito baixa</option><option :value="2">2 · Baixa</option><option :value="3">3 · Média</option><option :value="4">4 · Boa</option><option :value="5">5 · Alta</option></select></div>
+                </div>
+                <div class="flex justify-between items-center flex-wrap gap-2 mt-4"><span class="text-xs text-slate-500">Os dados são salvos neste navegador.</span><button class="btn btn-sm btn-outline border-slate-600" @click="saveJournal"><app-icon name="save" :size="15"></app-icon> Salvar anotações</button></div>
+              </article>
+            </div>
+
+            <aside class="right-column space-y-5">
+              <article class="panel focus-panel"><div class="flex items-center justify-between"><div><div class="section-kicker">MODO CONCENTRAÇÃO</div><h3 class="section-heading">Timer de foco</h3></div><div class="small-icon-bubble"><app-icon name="timer" :size="19"></app-icon></div></div>
+                <div class="timer-display">{{timerLabel}}</div><div class="timer-caption">{{timerRunning?'Sessão em andamento • mantenha o foco':timerSpent>0?'Sessão pausada':'Uma tarefa de cada vez'}}</div>
+                <div class="timer-progress"><div :style="{width:timerPct+'%'}"></div></div>
+                <div class="timer-actions"><button class="btn btn-primary flex-1" @click="toggleTimer"><app-icon :name="timerRunning?'pause':'play'" :size="17"></app-icon>{{timerRunning?'Pausar':'Iniciar'}}</button><button class="btn btn-outline border-slate-600" @click="resetTimer" title="Reiniciar contagem"><app-icon name="refresh" :size="17"></app-icon></button></div>
+                <button class="log-focus-button" @click="finishTimer" :disabled="timerSpent===0"><app-icon name="check" :size="15"></app-icon> Registrar tempo estudado</button>
+                <p class="focus-tip">Pausas podem ser feitas entre os blocos; não entram nas 2 horas efetivas.</p>
+              </article>
+              <article class="panel next-panel"><div class="section-kicker">PRÓXIMOS PASSOS</div><h3 class="section-heading">Os próximos 5 dias</h3>
+                <button v-for="d in upcomingDays" :key="d.date" class="upcoming-item" @click="selectDate(d.date)"><div class="upcoming-date"><strong>{{dayNum(d.date)}}</strong><small>{{monthShort(d.date)}}</small></div><div class="flex-1 min-w-0"><div class="upcoming-title">{{d.primary}}</div><div class="upcoming-sub">{{d.secondary}}</div></div><app-icon :name="isDayComplete(d.date)?'check-circle':'chevron-right'" :size="16"></app-icon></button>
+              </article>
+              <article class="panel weekly-panel"><div class="section-kicker">CONSTÂNCIA</div><h3 class="section-heading">Semana atual</h3><div class="week-circles"><button v-for="wday in currentWeekDays" :key="wday.date" class="week-item" @click="selectDate(wday.date)"><span class="week-letter">{{wday.weekday.slice(0,3)}}</span><span class="week-round" :class="{done:isDayComplete(wday.date),current:wday.date===selectedDay.date}"><app-icon v-if="isDayComplete(wday.date)" name="check" :size="16"></app-icon><template v-else>{{dayNum(wday.date)}}</template></span></button></div><p class="text-xs text-slate-400 mt-4">Marque as sessões para construir uma rotina sustentável.</p></article>
+              <article class="panel note-panel"><div class="text-sky-300 mb-3"><app-icon name="lightbulb" :size="21"></app-icon></div><div class="font-semibold">Dica para o Cebraspe</div><p class="text-sm text-slate-400 leading-relaxed mt-2">No edital de 2021: +1 ponto por acerto, −1 por erro e 0 em branco. Não memorize só a resposta: corrija as justificativas de cada erro.</p></article>
+            </aside>
+          </div>
+        </section>
+
+        <!-- Calendário -->
+        <section v-else-if="page==='calendar'" class="page-animate space-y-5">
+          <div class="panel"><div class="calendar-toolbar"><div><div class="section-kicker">VISÃO GERAL</div><h2 class="section-heading">{{calendarMonthName}}</h2></div><div class="flex items-center gap-2"><button class="nav-button" @click="changeMonth(-1)" :disabled="calendarKey==='2026-11'" aria-label="Mês anterior"><app-icon name="chevron-left" :size="19"></app-icon></button><button class="today-button" @click="calendarGoToday">Mês atual</button><button class="nav-button" @click="changeMonth(1)" :disabled="calendarKey==='2027-11'" aria-label="Mês seguinte"><app-icon name="chevron-right" :size="19"></app-icon></button></div></div>
+            <div class="calendar-legend"><span><i class="legend-dot done"></i>Concluído</span><span><i class="legend-dot started"></i>Parcial</span><span><i class="legend-dot pending"></i>Pendente</span></div>
+            <div class="calendar-grid"><div v-for="n in ['SEG','TER','QUA','QUI','SEX','SÁB','DOM']" :key="n" class="calendar-weekday">{{n}}</div>
+              <template v-for="(cell,idx) in calendarCells" :key="idx"><span v-if="!cell" class="calendar-empty"></span><button v-else class="calendar-day" :class="{done:isDayComplete(cell.date),started:dayDoneCount(cell.date)>0&&!isDayComplete(cell.date),chosen:cell.date===selectedDay.date,today:cell.date===TODAY,outside:!cell.inPlan}" :disabled="!cell.inPlan" :title="cell.inPlan?daysByDate[cell.date]?.theme:''" @click="selectDate(cell.date)"><span class="cal-number">{{cell.num}}</span><span v-if="cell.inPlan" class="cal-indicator"></span></button></template>
+            </div>
+          </div>
+          <div class="panel"><div class="flex flex-wrap items-center justify-between gap-3"><div><div class="section-kicker">PLANEJAMENTO DO MÊS</div><h3 class="section-heading">Dias de estudo</h3></div><span class="mini-pill">{{monthDone}} / {{monthDays.length}} concluídos</span></div>
+            <div class="month-progress"><div :style="{width:monthDays.length?Math.round(monthDone/monthDays.length*100)+'%':'0%'}"></div></div>
+            <div class="month-list"><button v-for="d in monthDays" :key="d.date" class="month-item" @click="selectDate(d.date)"><span class="month-item-date">{{dayNum(d.date)}}</span><span class="flex-1 min-w-0"><strong>{{d.primary}}</strong><small>{{d.secondary}} · {{d.phase}}</small></span><span class="month-item-status" :class="{done:isDayComplete(d.date)}">{{dayDoneCount(d.date)}}/4</span></button></div>
+          </div>
+        </section>
+
+        <!-- Estatísticas -->
+        <section v-else-if="page==='stats'" class="page-animate space-y-5">
+          <div class="summary-grid"><div class="summary-card"><div class="summary-icon blue"><app-icon name="target" :size="20"></app-icon></div><div><div class="summary-label">CONCLUSÃO</div><div class="summary-number">{{overallPct}}<small>%</small></div></div></div><div class="summary-card"><div class="summary-icon orange"><app-icon name="flame" :size="20"></app-icon></div><div><div class="summary-label">SEQUÊNCIA</div><div class="summary-number">{{streak}} <small>dias</small></div></div></div><div class="summary-card"><div class="summary-icon teal"><app-icon name="clock" :size="20"></app-icon></div><div><div class="summary-label">ESTUDADO</div><div class="summary-number">{{completedHours}} <small>h</small></div></div></div><div class="summary-card"><div class="summary-icon purple"><app-icon name="timer" :size="20"></app-icon></div><div><div class="summary-label">TIMER REGISTRADO</div><div class="summary-number">{{focusHours}} <small>h</small></div></div></div></div>
+          <div class="stats-columns"><div class="panel"><div class="section-kicker">HÁBITO DIÁRIO</div><h3 class="section-heading">Últimos 14 dias do plano</h3><div class="bars-chart"><div v-for="day in chartDays" :key="day.date" class="bar-group" :title="formatShortDate(day.date)+' · '+dayDoneCount(day.date)+'/4 blocos'"><div class="bar-column"><span class="bar-rect" :style="{height:Math.max(3,dayDoneCount(day.date)*23)+'%'}" :class="{strong:dayDoneCount(day.date)===4}"></span></div><span class="bar-label">{{dayNum(day.date)}}</span></div></div><div class="flex justify-between text-xs text-slate-500 mt-3"><span>Até 4 blocos por dia</span><span>100% = 2h</span></div></div>
+            <div class="panel"><div class="section-kicker">QUALIDADE</div><h3 class="section-heading">Acertos em questões</h3><div class="accuracy-value">{{accuracy}}<small>%</small></div><p class="text-sm text-slate-400 mt-1">{{sumCorrect}} de {{sumQuestions}} itens registrados</p><p class="text-xs text-slate-400 mt-2">Saldo de treino Cebraspe (edital 2021): <strong class="text-sky-300">{{cebraspeScore > 0 ? ' +' : ''}}{{cebraspeScore}} pontos</strong> (+1 acerto, −1 erro; não inclui itens em branco).</p><div class="progress-track mt-5"><div class="progress-fill" :style="{width:accuracy+'%'}"></div></div><div class="separation"></div><div class="flex justify-between"><span class="text-sm text-slate-400">Erros não revisados</span><span class="font-bold text-slate-100">{{unresolvedCount}}</span></div><button class="btn btn-sm btn-outline border-slate-600 w-full mt-4" @click="navigate('errors')">Abrir caderno de erros</button></div></div>
+          <div class="panel"><div class="section-kicker">COBERTURA DO EDITAL</div><h3 class="section-heading">Progresso por disciplina</h3><p class="text-sm text-slate-400 mt-2 mb-4">Cada barra mostra os blocos concluídos daquela matéria no seu cronograma.</p><div class="subject-stats"><div v-for="s in subjectStats" :key="s.name" class="subject-stat"><div class="flex items-center gap-2"><span class="subject-dot" :style="{background:s.color}"></span><span class="flex-1 text-sm font-medium text-slate-200">{{s.name}}</span><span class="text-xs text-slate-400">{{s.complete}} / {{s.total}}</span></div><div class="progress-track mt-2"><div class="progress-fill" :style="{width:s.pct+'%',background:s.color}"></div></div></div></div></div>
+        </section>
+
+        <!-- Matérias -->
+        <section v-else-if="page==='subjects'" class="page-animate space-y-5"><div class="panel"><div class="flex flex-wrap items-center justify-between gap-3"><div><div class="section-kicker">ITEM 24 DO EDITAL 2021</div><h3 class="section-heading">Conteúdo programático</h3></div><span class="mini-pill">14 disciplinas</span></div><input class="input input-bordered w-full search-input mt-5" type="search" placeholder="Buscar matéria ou assunto…" v-model="subjectQuery" aria-label="Buscar conteúdo programático" /><p class="text-xs text-slate-500 mt-3">O plano é autoral e segue os tópicos do edital de 2021. Para estudar leis, consulte textos consolidados vigentes.</p></div>
+            <div class="subjects-grid"><article v-for="s in filteredSubjects" :key="s.name" class="panel subject-panel"><div class="subject-header"><span class="subject-icon" :style="{background:subjectColor(s.name)+'1c',color:subjectColor(s.name)}"><app-icon name="book" :size="20"></app-icon></span><div class="flex-1 min-w-0"><h3 class="font-semibold">{{s.name}}</h3><div class="text-xs text-slate-500 mt-1">{{s.count}} temas catalogados</div></div></div><button class="expand-subject" @click="expandedSubject=expandedSubject===s.name?'':s.name">{{expandedSubject===s.name?'Ocultar conteúdos':'Ver conteúdos'}} <app-icon :name="expandedSubject===s.name?'chevron-up':'chevron-down'" :size="15"></app-icon></button><ul v-if="expandedSubject===s.name || subjectQuery" class="topic-list"><li v-for="(t,i) in s.topics.filter(t=>!subjectQuery || (s.name+' '+t).toLocaleLowerCase('pt-BR').includes(subjectQuery.toLocaleLowerCase('pt-BR')))" :key="i">{{localizedTopic(t)}}</li></ul></article></div>
+        </section>
+
+        <!-- Caderno de erros -->
+        <section v-else-if="page==='errors'" class="page-animate space-y-5"><div class="panel"><div class="section-kicker">APRENDIZAGEM ATIVA</div><h3 class="section-heading">Registrar um erro</h3><p class="text-sm text-slate-400 mt-2 mb-5">Descreva a pegadinha e a regra correta. Revise até dominar o tema.</p><form @submit.prevent="createError" class="error-form"><div><label class="field-label" for="error-date">Dia de estudo</label><input type="date" id="error-date" class="input input-bordered field-input w-full" v-model="newError.date" min="2026-11-13" max="2027-11-12" required /></div><div><label class="field-label" for="error-subject">Matéria</label><select id="error-subject" class="select select-bordered field-input w-full" v-model="newError.subject"><option v-for="s in subjects" :value="s.name">{{s.name}}</option></select></div><div class="error-full"><label class="field-label" for="error-text">O que errei e como corrigir?</label><textarea id="error-text" class="textarea textarea-bordered journal-textarea w-full" rows="3" v-model="newError.description" placeholder="Ex.: confundi conceitos de internet e intranet; revisar definição e exemplos." maxlength="2000" required></textarea></div><button class="btn btn-primary error-full justify-self-start" type="submit"><app-icon name="plus" :size="17"></app-icon> Salvar no caderno</button></form></div>
+          <div class="panel"><div class="flex flex-wrap justify-between gap-3 items-center"><div><div class="section-kicker">REVISÃO DOS PONTOS FRACOS</div><h3 class="section-heading">{{unresolvedCount}} pendentes de revisão</h3></div><select class="select select-bordered field-input" v-model="errorFilter"><option value="pending">Pendentes</option><option value="all">Todos</option><option value="reviewed">Revisados</option></select></div><div v-if="filteredErrors.length===0" class="empty-state"><app-icon name="check-circle" :size="28"></app-icon><p>Nenhum registro nessa categoria.</p><span>Adicione dúvidas ou erros para manter um material de revisão.</span></div><div v-else class="error-list"><div v-for="e in filteredErrors" :key="e.id" class="error-item"><button class="task-check" :class="{checked:!!e.reviewed}" @click="markError(e)" :aria-label="e.reviewed?'Marcar não revisado':'Marcar revisado'"><app-icon v-if="e.reviewed" name="check" :size="17"></app-icon></button><div class="flex-1 min-w-0"><div class="text-xs text-slate-500">{{formatShortDate(e.study_date)}} · {{e.subject}}</div><p class="text-sm text-slate-200 leading-relaxed mt-2 whitespace-pre-wrap">{{e.description}}</p><div class="text-xs mt-2" :class="e.reviewed?'text-emerald-300':'text-amber-300'">{{e.reviewed?'Revisado':'Revisão pendente'}}</div></div><button class="icon-only danger" @click="deleteError(e)" aria-label="Excluir registro"><app-icon name="trash" :size="17"></app-icon></button></div></div></div>
+        </section>
+
+        <!-- Ajustes -->
+        <section v-else-if="page==='settings'" class="page-animate settings-stack"><div class="panel"><div class="section-kicker">PERSONALIZAÇÃO</div><h3 class="section-heading">Preferências de estudo</h3><div class="settings-row"><div><strong>Língua estrangeira</strong><p>Para os tópicos de compreensão de textos.</p></div><select class="select select-bordered field-input" v-model="language" @change="setLanguage"><option value="Inglês">Inglês</option><option value="Espanhol">Espanhol</option></select></div><div class="settings-row"><div><strong>Seu horário ideal</strong><p>Usado para aviso apenas enquanto o aplicativo estiver aberto.</p></div><input type="time" v-model="reminderTime" @change="setReminder" class="input input-bordered field-input time-input" /></div><div class="settings-row"><div><strong>Lembrete no navegador</strong><p>Alertas dependem de permissão e da página aberta.</p></div><button class="btn btn-sm btn-outline border-slate-600" @click="requestNotifications">{{notificationStatus}}</button></div></div>
+          <div class="panel"><div class="section-kicker">SEUS DADOS</div><h3 class="section-heading">Backup e segurança</h3><p class="text-sm text-slate-400 mt-2">O progresso fica no SQLite deste navegador e não sincroniza automaticamente entre aparelhos. Faça backups periodicamente.</p><div class="settings-actions"><button class="btn btn-primary" @click="exportSQLite"><app-icon name="download" :size="17"></app-icon> Baixar banco .sqlite</button><button class="btn btn-outline border-slate-600" @click="openImport"><app-icon name="upload" :size="17"></app-icon> Restaurar backup</button><button class="btn btn-outline border-slate-600" @click="exportCSV"><app-icon name="download" :size="17"></app-icon> Exportar progresso CSV</button></div><input type="file" ref="importFile" accept=".sqlite,.db,application/x-sqlite3,application/octet-stream" class="hidden" @change="importSQLite" /><div class="storage-status"><app-icon name="database" :size="17"></app-icon> Armazenamento: <strong>{{storageLabel}}</strong></div></div>
+          <div class="panel"><div class="section-kicker">REFERÊNCIA E METODOLOGIA</div><h3 class="section-heading">Como o cronograma foi montado</h3><div class="method-body"><p><strong>Fonte:</strong> Edital Concurso PRF nº 1, de 18 de janeiro de 2021, especialmente itens 8, 9 e 24. São 120 itens objetivos de certo/errado: bloco I (55), bloco II (30), bloco III (35), além de prova discursiva.</p><p><strong>Correção Cebraspe (edital 2021):</strong> +1 ponto por item correto; −1 por incorreto; 0 sem marcação ou com marcação dupla. Mínimos eliminatórios: 15 pontos no bloco I, 10 no bloco II, 10 no bloco III e 50 no conjunto.</p><p><strong>Estratégia:</strong> 365 dias, 4 blocos diários de 30 minutos, uma revisão semanal e retomadas progressivas dos tópicos. Informática aparece duas vezes por semana, sem eliminar as outras disciplinas.</p><p><strong>Atenção:</strong> o edital de 2021 não criou vaga específica em informática ou exclusiva de Rondônia. Legislação e resoluções podem ter sido alteradas ou revogadas depois de 2021. Adapte à publicação de um novo edital.</p><p><strong>Fitness / TAF:</strong> preparo físico é parte do concurso e deve ser planejado separadamente das duas horas diárias de estudo teórico.</p></div><a href="./reference/ED_1_PRF_2021_ABERTURA.pdf" target="_blank" rel="noopener" class="reference-link"><app-icon name="file" :size="17"></app-icon> Abrir edital de referência (PDF)</a></div>
+        </section>
+
+        <footer class="app-footer">PRF STUDY <span>•</span> Ferramenta independente de preparação, não oficial da PRF <span>•</span> Base: edital 2021</footer>
+      </main>
+    </div>
+
+    <!-- Navegação de app para celular -->
+    <nav class="mobile-bottom-nav" aria-label="Navegação no celular"><button v-for="item in mobileNavigation" :key="item.id" class="mobile-nav-item" :class="{active:page===item.id}" @click="navigate(item.id)"><app-icon :name="item.icon" :size="21"></app-icon><span>{{item.mobile}}</span></button></nav>
+    <transition name="toast"><div v-if="toastText" class="toast-notice" role="status"><app-icon name="check-circle" :size="18"></app-icon>{{toastText}}</div></transition>
+  </template>
+</div>
+</body>
+</html>
