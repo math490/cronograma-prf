@@ -1,0 +1,14 @@
+# Edite ALLOWED_ORIGIN e database_id antes do primeiro deploy.
+name = "prf-study-api"
+main = "src/worker.js"
+compatibility_date = "2026-11-14"
+workers_dev = true
+
+[vars]
+# APENAS a origem, sem caminho: https://SEU_USUARIO.github.io
+ALLOWED_ORIGIN = "https://math490.github.io"
+
+[[d1_databases]]
+binding = "prf_study_db"
+database_name = "prf-study-db"
+database_id = "9b3d445e-1c07-489f-8d43-14921dc4b4be"

@@ -1,0 +1,16 @@
+# NÃO publicar chaves, backups, cache de ferramentas nem bancos com progresso.
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+.wrangler/
+node_modules/
+.venv/
+__pycache__/
+*.sqlite
+*.sqlite3
+*.db
+*.sql.bak
+backup-*.sql
+!data/template.sqlite
+.DS_Store

@@ -1,0 +1,277 @@
+[
+  {
+    "name": "Língua Portuguesa",
+    "topics": [
+      "Interpretação de textos: tema, tese, inferência e informação explícita",
+      "Tipos e gêneros textuais: estrutura, finalidade e linguagem",
+      "Ortografia oficial e emprego de palavras",
+      "Coesão: referenciação, substituição, repetição e conectores",
+      "Emprego de tempos e modos verbais",
+      "Classes de palavras e funções no período",
+      "Coordenação de orações e termos da oração",
+      "Subordinação de orações e termos da oração",
+      "Pontuação e efeitos de sentido",
+      "Concordância verbal e nominal",
+      "Regência verbal e nominal",
+      "Crase: condições de ocorrência e casos especiais",
+      "Colocação pronominal",
+      "Reescrita de frases e parágrafos: manutenção de sentido",
+      "Significação de palavras e substituição de trechos",
+      "Reorganização de orações e períodos",
+      "Reescrita de textos e níveis de formalidade",
+      "Redação oficial: Manual de Redação da Presidência",
+      "Expedientes oficiais: finalidade, linguagem e formato"
+    ],
+    "count": 19
+  },
+  {
+    "name": "Raciocínio Lógico-Matemático",
+    "topics": [
+      "Equações do 1º e 2º graus e problemas contextualizados",
+      "Sistemas lineares e modelagem de situações-problema",
+      "Noção de função e interpretação de gráficos",
+      "Função afim e função quadrática: gráficos e aplicações",
+      "Funções exponencial e logarítmica",
+      "Razão, proporção e taxas de variação",
+      "Regra de três simples e composta",
+      "Porcentagem e aplicações em situações reais",
+      "Sequências, padrões, progressão aritmética e geométrica",
+      "Contagem, análise combinatória e probabilidade básica",
+      "Estatística: médias e desvios de conjuntos de dados",
+      "Tabelas e gráficos em diferentes representações",
+      "Noções de teoria dos conjuntos",
+      "Geometria plana, figuras espaciais e escalas",
+      "Projeções, planificações e cortes de sólidos",
+      "Métrica, áreas, volumes e estimativas"
+    ],
+    "count": 16
+  },
+  {
+    "name": "Informática",
+    "topics": [
+      "Internet, intranet e conceitos de redes e serviços",
+      "Navegadores web e ferramentas de busca e pesquisa",
+      "Correio eletrônico, listas e grupos de discussão",
+      "Redes sociais e ferramentas colaborativas",
+      "Windows: interface, arquivos, pastas e recursos básicos",
+      "Acesso remoto a computadores e suas aplicações",
+      "Transferência de informações e arquivos",
+      "Aplicativos de áudio, vídeo e multimídia",
+      "Transformação digital: conceitos e impactos",
+      "Internet das Coisas (IoT): cenários de aplicação",
+      "Big data: características e usos",
+      "Inteligência artificial: conceitos e aplicações",
+      "Segurança da informação: proteção e ameaças",
+      "Vírus, worms, phishing e pragas virtuais",
+      "Antivírus, firewall e anti-spyware",
+      "VPN e proteção da comunicação",
+      "Cloud computing: serviços, características e riscos",
+      "Integração: redes, proteção, nuvem e transformação digital"
+    ],
+    "count": 18
+  },
+  {
+    "name": "Física",
+    "topics": [
+      "Cinemática escalar: posição, velocidade e aceleração",
+      "Cinemática vetorial: vetores e movimentos",
+      "Movimento circular e grandezas angulares",
+      "Primeira, segunda e terceira leis de Newton",
+      "Leis de Newton: exercícios de aplicações práticas",
+      "Trabalho de uma força e cálculo de potência",
+      "Energia cinética e energia potencial",
+      "Atrito e forças dissipativas",
+      "Conservação e transformação de energia",
+      "Quantidade de movimento e conservação",
+      "Impulso e variação da quantidade de movimento",
+      "Colisões e problemas de conservação"
+    ],
+    "count": 12
+  },
+  {
+    "name": "Ética e Cidadania",
+    "topics": [
+      "Ética e moral: diferenças e aproximações",
+      "Princípios, valores, integridade e ética pública",
+      "Moralidade administrativa: CF art. 37 e Lei 8.112/1990",
+      "Governança federal: Decreto 9.203/2017",
+      "Código de Ética do Servidor: Decreto 1.171/1994",
+      "Comissões de Ética: Decreto 6.029/2007",
+      "Código de Conduta da Alta Administração Federal",
+      "Ética, cidadania e democracia",
+      "Transparência e Lei de Acesso à Informação",
+      "Decreto 7.724/2012: acesso à informação",
+      "Conflitos de interesse: Lei 12.813/2013",
+      "Nepotismo: Decreto 7.203/2010"
+    ],
+    "count": 12
+  },
+  {
+    "name": "Geopolítica",
+    "topics": [
+      "Brasil político: nação, território e fronteiras",
+      "Organização do Estado brasileiro",
+      "Divisão inter-regional do trabalho e da produção",
+      "Estrutura urbana, metrópoles e urbanização",
+      "População e migrações internas",
+      "Indústria, estrutura urbana e setor agrícola",
+      "Rede de transporte: modais e infraestrutura",
+      "Economia brasileira e internacionalização",
+      "Geografia e gestão ambiental",
+      "Biomas, domínios naturais e ecossistemas"
+    ],
+    "count": 10
+  },
+  {
+    "name": "Língua Estrangeira",
+    "topics": [
+      "Leitura e compreensão de texto em inglês ou espanhol",
+      "Identificação de ideia principal e informações específicas",
+      "Inferência lexical a partir do contexto",
+      "Conectores e estruturação do texto",
+      "Itens gramaticais relevantes para compreender o texto",
+      "Leitura de texto sobre mobilidade e segurança viária"
+    ],
+    "count": 6
+  },
+  {
+    "name": "Legislação de Trânsito",
+    "topics": [
+      "CTB: disposições preliminares e Sistema Nacional de Trânsito",
+      "CTB: composição, competências e organização do SNT",
+      "CTB: normas gerais de circulação e conduta",
+      "CTB: pedestres, ciclistas e circulação",
+      "CTB: educação para o trânsito e sinalização",
+      "CTB: engenharia de tráfego e operação da via",
+      "CTB: veículos, classificação e equipamentos obrigatórios",
+      "CTB: registro, licenciamento e identificação veicular",
+      "CTB: habilitação e formação de condutores",
+      "CTB: infrações e classificação de penalidades",
+      "CTB: medidas administrativas",
+      "CTB: processo administrativo, autuação e notificações",
+      "CTB: crimes de trânsito e disposições penais",
+      "CTB e alterações listadas no edital: Lei 14.071/2020",
+      "Lei 5.970/1973: acidentes de trânsito e prova pericial",
+      "Resoluções CONTRAN: sinalização e fiscalização",
+      "Resoluções CONTRAN: equipamentos e requisitos de veículos",
+      "Resoluções CONTRAN: transporte de cargas e dimensões",
+      "Resoluções CONTRAN: velocidade, alcoolemia e fiscalização",
+      "Resoluções CONTRAN: procedimentos administrativos e penalidades",
+      "Resoluções CONTRAN: habilitação, registro e licenciamento",
+      "Resoluções CONTRAN: revisão do rol listado no item 24"
+    ],
+    "count": 22
+  },
+  {
+    "name": "Direito Administrativo",
+    "topics": [
+      "Organização administrativa: centralização e descentralização",
+      "Concentração, desconcentração e administração direta e indireta",
+      "Autarquias, fundações e empresas estatais",
+      "Atos administrativos: conceito, requisitos e atributos",
+      "Atos administrativos: classificação e espécies",
+      "Agentes públicos: conceitos, espécies, cargos e funções",
+      "Lei 8.112/1990: direitos, deveres e responsabilidades",
+      "Carreira PRF: Lei 9.654/1998 e Decreto 8.282/2014",
+      "Indenizações: Leis 12.855/2013 e 13.712/2018",
+      "Poderes hierárquico, disciplinar, regulamentar e de polícia",
+      "Uso e abuso do poder",
+      "Licitações: princípios, modalidades, tipos e procedimento (recorte de 2021)",
+      "Contratação direta: dispensa e inexigibilidade",
+      "Controle administrativo, judicial e legislativo",
+      "Responsabilidade civil do Estado: ação e omissão",
+      "Excludentes e atenuantes da responsabilidade do Estado",
+      "Regime jurídico-administrativo e princípios expressos e implícitos"
+    ],
+    "count": 17
+  },
+  {
+    "name": "Direito Constitucional",
+    "topics": [
+      "Poder constituinte: conceito, originário e derivado",
+      "Reforma, revisão e emendas constitucionais",
+      "Direitos e deveres individuais e coletivos",
+      "Vida, liberdade, igualdade, segurança e propriedade",
+      "Direitos sociais, nacionalidade e direitos políticos",
+      "Garantias fundamentais e remédios constitucionais",
+      "Poder Executivo: organização e competências",
+      "Chefia de Estado, chefia de governo e responsabilidades",
+      "União: bens e competências, arts. 20 a 24",
+      "Defesa do Estado e instituições democráticas",
+      "Segurança pública e atribuições da PRF: art. 144",
+      "Ordem social e seguridade social",
+      "Meio ambiente, família, criança, adolescente e idoso"
+    ],
+    "count": 13
+  },
+  {
+    "name": "Direito Penal",
+    "topics": [
+      "Princípios básicos do Direito Penal",
+      "Lei penal no tempo, tempo do crime e conflito de leis",
+      "Lei penal no espaço e territorialidade",
+      "Extraterritorialidade e lugar do crime",
+      "Tipicidade, dolo e culpa",
+      "Erro de tipo e suas consequências",
+      "Crime tentado, consumado e impossível",
+      "Punibilidade e causas de extinção",
+      "Ilicitude e excludentes de ilicitude",
+      "Excesso punível, culpabilidade e excludentes",
+      "Imputabilidade e erro de proibição",
+      "Crimes contra a pessoa e o patrimônio",
+      "Crimes contra a dignidade sexual e a incolumidade pública",
+      "Crimes contra a fé pública",
+      "Crimes contra a Administração Pública"
+    ],
+    "count": 15
+  },
+  {
+    "name": "Direito Processual Penal",
+    "topics": [
+      "Ação penal: conceito, características e espécies",
+      "Ação penal: condições e legitimidade",
+      "Termo Circunstanciado de Ocorrência e Lei 9.099/1995",
+      "Atos processuais: forma, lugar e tempo",
+      "Prova: conceito, objeto e classificação",
+      "Preservação do local de crime",
+      "Requisitos, ônus e provas ilícitas",
+      "Prova pericial, interrogatório e confissão",
+      "Testemunhas, reconhecimento, acareação e documentos",
+      "Busca e apreensão pessoal e domiciliar",
+      "Prisões: conceitos, formalidades e espécies",
+      "Prisão em flagrante",
+      "Identificação criminal: CF e Lei 12.037/2009",
+      "Diligências investigatórias: arts. 6º e 13 do CPP"
+    ],
+    "count": 14
+  },
+  {
+    "name": "Legislação Especial",
+    "topics": [
+      "Documentos de identificação: Leis 5.553/1968 e 12.037/2009",
+      "ECA: Lei 8.069/1990",
+      "Crimes hediondos: Lei 8.072/1990",
+      "Competências da PRF: Decreto 1.655/1995 e Decreto 9.662/2019",
+      "Juizados especiais: Lei 9.099/1995",
+      "Lei de Tortura: Lei 9.455/1997",
+      "Crimes ambientais: Lei 9.605/1998, capítulos III e V",
+      "Estatuto do Desarmamento: Lei 10.826/2003, capítulo IV",
+      "Lei de Drogas: Lei 11.343/2006",
+      "Organizações criminosas: Lei 12.850/2013",
+      "SUSP: Lei 13.675/2018",
+      "Abuso de autoridade: Lei 13.869/2019"
+    ],
+    "count": 12
+  },
+  {
+    "name": "Direitos Humanos",
+    "topics": [
+      "Direitos humanos na Constituição Federal",
+      "Tratados internacionais de direitos humanos e a CF",
+      "Declaração Universal dos Direitos Humanos",
+      "Convenção Americana sobre Direitos Humanos",
+      "Pacto de San José: Decreto 678/1992"
+    ],
+    "count": 5
+  }
+]
