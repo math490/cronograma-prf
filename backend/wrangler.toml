@@ -9,6 +9,6 @@ workers_dev = true
 ALLOWED_ORIGIN = "https://math490.github.io"
 
 [[d1_databases]]
-binding = "prf_study_db"
+binding = "DB"
 database_name = "prf-study-db"
 database_id = "9b3d445e-1c07-489f-8d43-14921dc4b4be"
